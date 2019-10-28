@@ -1,9 +1,9 @@
 <template>
   <div id="app">
-    <md-toolbar  class="md-primary" md-elevation="1">
+    <md-toolbar class="md-primary" md-elevation="1">
       <h3 class="md-title" style="flex: 1">Empleados</h3>
       <md-button @click.prevent="logut">Cerrar Sesión</md-button>
-      <router-link v-if="this.user=='empleado'" to="/solicitudes">
+      <router-link to="/solicitudes">
         <md-button class="md-primary">Solicitudes</md-button>
       </router-link>
       <router-link to="/empleados">
@@ -36,7 +36,7 @@
       </md-table-empty-state>
 
       <md-table-row slot="md-table-row" slot-scope="{item}" v-bind="item">
-        <md-table-cell md-label="Nombre" md-sort-by="nombre">{{item.id}}</md-table-cell>
+        <md-table-cell md-label="Id" md-sort-by="id">{{item.id}}</md-table-cell>
         <md-table-cell md-label="Nombre" md-sort-by="nombre">{{item.nombre}}</md-table-cell>
         <md-table-cell md-label="Apellido" md-sort-by="apellido">{{ item.apellido }}</md-table-cell>
         <md-table-cell
@@ -62,14 +62,14 @@
     <!-- ------------------------------------------------------------------------------------------- -->
     <!-- -------------------------------BOTON AGREGAR EMPLEADO------------------------------- -->
     <md-speed-dial :class="bottomPosition">
-      <md-speed-dial-target @click="showDialog=true">
+      <md-speed-dial-target @click="showDialogAgregar=true">
         <md-icon>add</md-icon>
       </md-speed-dial-target>
     </md-speed-dial>
     <!-- ------------------------------------------------------------------------------------------- -->
 
     <!------------------------------------------- DIALOGO AGREGAR EMPLEADO ----------------------------------->
-    <md-dialog :md-active.sync="showDialog">
+    <md-dialog :md-active.sync="showDialogAgregar">
       <div>
         <form novalidate class="md-layout" @submit.prevent="validateUser">
           <md-card class="md-layout-item">
@@ -175,6 +175,14 @@
                     >The fechaNacimiento is required</span>
                   </md-field>
                 </div>
+              </div>
+              <div class="md-layout-item">
+                <md-field>
+                  <md-select v-model="form.rol" name="rol" id="rol" placeholder="Rol">
+                    <md-option value="admin">Administrador Principal</md-option>
+                    <md-option value="empleado">Empleado</md-option>
+                  </md-select>
+                </md-field>
               </div>
             </md-card-content>
 
@@ -353,15 +361,17 @@ export default {
       fechaIngreso: null,
       fechaNacimiento: null,
       dpi: null,
-      email: null
+      email: null,
+      rol: null
     },
     userSaved: false,
     sending: false,
     search: null,
     searched: [],
     users: [],
-    user:null,
+    user: null,
     showDialog: false,
+    showDialogAgregar: false,
     bottomPosition: "md-bottom-right",
     disabledDates: date => {
       const day = date.getDay();
@@ -403,7 +413,7 @@ export default {
         .then(response => {
           this.search = "";
           this.users = response.data;
-          this.user=localStorage.user
+          this.user = localStorage.user;
         })
 
         .catch(e => console.log(e));
@@ -441,7 +451,8 @@ export default {
           dpi: this.form.dpi,
           email: this.form.email,
           fechaNacimiento: this.form.fechaNacimiento,
-          fechaIngreso: this.form.fechaIngreso
+          fechaIngreso: this.form.fechaIngreso,
+          rol: this.form.rol
         })
         .then(response => {
           // eslint-disable-next-line
@@ -452,6 +463,7 @@ export default {
             this.clearForm();
             this.users = this.users;
             this.getTodos();
+            this.showDialog = false;
           }, 1500);
           this.getTodos();
           this.showDialog = false;
@@ -516,6 +528,7 @@ export default {
 .md-table-cell {
   background-color: white;
   width: 0%;
+  text-align: center;
 }
 .users {
   font-family: verdana;

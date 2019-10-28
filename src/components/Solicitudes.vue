@@ -279,6 +279,7 @@ export default {
 .md-table-cell {
   background-color: white;
   width: 0%;
+  text-align: center
 }
 .users {
   font-family: verdana;

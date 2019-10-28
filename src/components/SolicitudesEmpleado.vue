@@ -2,13 +2,13 @@
   <div id="app">
     <md-toolbar class="md-primary" md-elevation="1">
       <h3 class="md-title" style="flex: 1">Control de Vacaciones</h3>
-      <md-button @click.prevent="logut">Cerrar Sesión</md-button>
-      <router-link to="'/solicitudesEmpleado">
+      <router-link to="/solicitudesEmpleado">
         <md-button class="md-primary">Solicitudes</md-button>
       </router-link>
       <router-link to="/perfilEmpleado">
         <md-button class="md-primary">Vacaciones</md-button>
       </router-link>
+      <md-button @click.prevent="logut">Cerrar Sesión</md-button>
     </md-toolbar>
     <!-------------------------------------- TABLA EMPLEADOS---------------------------------------- -->
     <md-table
