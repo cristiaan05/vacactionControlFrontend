@@ -23,37 +23,39 @@
         <div class="md-toolbar-section-start">
           <h1 class="md-title">EMPLEADOS</h1>
         </div>
-        <md-field md-clearable class="md-toolbar-section-end">
+        <!--         <md-field md-clearable class="md-toolbar-section-end">
           <md-input placeholder="Buscar por nombre..." v-model="search" @input="searchOnTable" />
         </md-field>
+        -->
       </md-table-toolbar>
 
-      <md-table-empty-state
+      <!--  <md-table-empty-state
         md-label="No se encontro el empleado"
         :md-description="`No se encontraron coincidencias. Intenta con un nombre diferente o crea un usuario con ese nombre.`"
       >
         <md-button class="md-primary md-raised" @click="showDialog=true">Crear usuario</md-button>
-      </md-table-empty-state>
+      </md-table-empty-state>-->
 
-      <md-table-row slot="md-table-row" slot-scope="{item}" v-bind="item">
-        <md-table-cell md-label="Id" md-sort-by="id">{{item.id}}</md-table-cell>
-        <md-table-cell md-label="Nombre" md-sort-by="nombre">{{item.nombre}}</md-table-cell>
-        <md-table-cell md-label="Apellido" md-sort-by="apellido">{{ item.apellido }}</md-table-cell>
-        <md-table-cell
-          md-label="Fecha Ingreso"
-          md-sort-by="fechaIngreso"
-        >{{date(item.fechaIngreso)}}</md-table-cell>
+      <md-table-row slot="md-table-row" v-for="i in users" :key="i.id">
+        <md-table-cell md-label="Id" md-sort-by="id">{{i.id}}</md-table-cell>
+        <md-table-cell md-label="Nombre" md-sort-by="nombre">{{i.nombre}}</md-table-cell>
+        <md-table-cell md-label="Apellido" md-sort-by="apellido">{{ i.apellido }}</md-table-cell>
+        <md-table-cell md-label="Fecha Ingreso" md-sort-by="fechaIngreso">{{date(i.fechaIngreso)}}</md-table-cell>
         <md-table-cell
           md-label="Fecha Nacimiento"
           md-sort-by="fechaNacimiento"
-        >{{date(item.fechaNacimiento)}}</md-table-cell>
-        <md-table-cell md-label="Email" md-sort-by="email">{{ item.email }}</md-table-cell>
-        <md-table-cell md-label="DPI" md-sort-by="dpi">{{ item.dpi }}</md-table-cell>
+        >{{date(i.fechaNacimiento)}}</md-table-cell>
+        <md-table-cell md-label="Email" md-sort-by="email">{{ i.email }}</md-table-cell>
+        <md-table-cell md-label="DPI" md-sort-by="dpi">{{ i.dpi }}</md-table-cell>
         <md-table-cell>
-          <md-button class="md-icon-button md-primary" @click="showDialog=true">
+          <md-button
+            class="md-icon-button md-primary"
+            @click.prevent="showDialogEditar=true"
+            @click="getEmpleado(i.id)"
+          >
             <md-icon>edit</md-icon>
           </md-button>
-          <md-button class="md-icon-button md-accent" @click="deleteUser(item.id)">
+          <md-button class="md-icon-button md-accent" @click="deleteUser(i.id)">
             <md-icon>delete</md-icon>
           </md-button>
         </md-table-cell>
@@ -69,7 +71,7 @@
     <!-- ------------------------------------------------------------------------------------------- -->
 
     <!------------------------------------------- DIALOGO AGREGAR EMPLEADO ----------------------------------->
-    <md-dialog :md-active.sync="showDialogAgregar">
+    <md-dialog :md-active.sync="showDialogAgregar" ref="formAgregarDialogo">
       <div>
         <form novalidate class="md-layout" @submit.prevent="validateUser">
           <md-card class="md-layout-item">
@@ -189,7 +191,11 @@
             <md-progress-bar md-mode="indeterminate" v-if="sending" />
 
             <md-card-actions>
-              <md-button class="md-primary" @click="showDialog = false">Close</md-button>
+              <md-button
+                class="md-primary"
+                @click="showDialogAgregar = false"
+                @click.prevent="clearForm"
+              >Close</md-button>
               <md-button type="submit" class="md-primary" :disabled="sending">Create user</md-button>
             </md-card-actions>
           </md-card>
@@ -201,9 +207,9 @@
     <!-- ----------------------------------------------------------------------------------------------------------------------- -->
 
     <!------------------------------------------- DIALOGO EDITAR EMPLEADO ----------------------------------->
-    <md-dialog :md-active.sync="showDialog">
+    <md-dialog :md-active.sync="showDialogEditar" ref="formEditarDialogo">
       <div>
-        <form novalidate class="md-layout" @submit.prevent="validateEditUser">
+        <form novalidate class="md-layout-edit" @submit.prevent="validateUser">
           <md-card class="md-layout-item">
             <md-card-header>
               <div class="md-title">Editar Empleado</div>
@@ -249,54 +255,6 @@
               </div>
               <div class="md-layout md-gutter">
                 <div class="md-layout-item md-small-size-100">
-                  <md-field :class="getValidationClass('dpi')">
-                    <label for="dpi">DPI</label>
-                    <md-input
-                      type="number"
-                      id="dpi"
-                      name="dpi"
-                      autocomplete="dpi"
-                      v-model="form.dpi"
-                      :disabled="sending"
-                    />
-                    <span class="md-error" v-if="!$v.form.dpi.required">The dpi is required</span>
-                    <span class="md-error" v-else-if="!$v.form.dpi.minlength">Invalid dpi</span>
-                    <span class="md-error" v-else-if="!$v.form.dpi.maxlength">Invalid dpi</span>
-                  </md-field>
-                </div>
-                <div class="md-layout-item md-small-size-100">
-                  <md-field :class="getValidationClass('email')">
-                    <label for="email">Email</label>
-                    <md-input
-                      type="email"
-                      name="email"
-                      id="email"
-                      autocomplete="email"
-                      v-model="form.email"
-                      :disabled="sending"
-                    />
-                    <span class="md-error" v-if="!$v.form.email.required">The email is required</span>
-                    <span class="md-error" v-else-if="!$v.form.email.email">Invalid email</span>
-                  </md-field>
-                </div>
-              </div>
-              <div class="md-layout md-gutter">
-                <div class="md-layout-item md-small-size-100">
-                  <md-field :class="getValidationClass('fechaIngreso')">
-                    <md-datepicker
-                      v-model="form.fechaIngreso"
-                      :md-disabled-dates="disabledDates"
-                      md-immediately
-                    >
-                      <label>Fecha de Ingreso</label>
-                    </md-datepicker>
-                    <span
-                      class="md-error"
-                      v-if="!$v.form.fechaIngreso.required"
-                    >The fechaIngreso is required</span>
-                  </md-field>
-                </div>
-                <div class="md-layout-item md-small-size-100">
                   <md-field :class="getValidationClass('fechaNacimiento')">
                     <md-datepicker v-model="form.fechaNacimiento" md-immediately>
                       <label for="fechaNacimiento">Fecha De Nacimiento</label>
@@ -307,18 +265,33 @@
                     >The fechaNacimiento is required</span>
                   </md-field>
                 </div>
+                <div class="md-layout-item">
+                  <md-field>
+                    <md-select v-model="form.rol" name="rol" id="rol" placeholder="Rol">
+                      <md-option value="admin">Administrador Principal</md-option>
+                      <md-option value="empleado">Empleado</md-option>
+                    </md-select>
+                  </md-field>
+                </div>
               </div>
             </md-card-content>
 
             <md-progress-bar md-mode="indeterminate" v-if="sending" />
 
             <md-card-actions>
-              <md-button class="md-primary" @click="showDialog = false">Close</md-button>
-              <md-button type="submit" class="md-primary" :disabled="sending">Create user</md-button>
+              <md-button
+                class="md-primary"
+                @click="showDialogEditar = false"
+                @click.prevent="clearForm"
+              >Close</md-button>
+              <md-button type="submit" class="md-primary" :disabled="sending" @click="editUser()">Save Changes</md-button>
             </md-card-actions>
           </md-card>
 
-          <md-snackbar :md-active.sync="userSaved">The user was saved with success!</md-snackbar>
+          <md-snackbar
+            :md-active.sync="userSaved"
+            :md-desactive.sync="showDialogEditar"
+          >The user was saved with success!</md-snackbar>
         </form>
       </div>
     </md-dialog>
@@ -342,7 +315,7 @@ const toLower = text => {
 
 const searchByName = (items, term) => {
   if (term) {
-    return items.filter(item => toLower(item.nombre).includes(toLower(term)));
+    return items.filter(i => toLower(i.nombre).includes(toLower(term)));
   }
 
   return items;
@@ -358,12 +331,13 @@ export default {
     form: {
       nombre: null,
       apellido: null,
+      email: null,
+      dpi: null,
       fechaIngreso: null,
       fechaNacimiento: null,
-      dpi: null,
-      email: null,
       rol: null
     },
+    id:null,
     userSaved: false,
     sending: false,
     search: null,
@@ -371,6 +345,7 @@ export default {
     users: [],
     user: null,
     showDialog: false,
+    showDialogEditar: false,
     showDialogAgregar: false,
     bottomPosition: "md-bottom-right",
     disabledDates: date => {
@@ -418,6 +393,23 @@ export default {
 
         .catch(e => console.log(e));
     },
+    getEmpleado(id) {
+      axios
+        .get("http://localhost:3000/empleado/" + id, {})
+        .then(response => {
+          console.log(response.data);
+          this.search = "";
+          this.form.nombre = response.data.nombre;
+          this.form.apellido = response.data.apellido;
+          this.form.fechaNacimiento = moment(
+            String(response.data.fechaNacimiento)
+          ).format("YYYY-MM-DD");
+          this.form.rol = response.data.usuario.rol;
+          this.id=response.data.id
+        })
+
+        .catch(e => console.log(e));
+    },
     newUser() {},
     searchOnTable() {
       this.searched = searchByName(this.users, this.search);
@@ -440,6 +432,7 @@ export default {
       this.form.email = null;
       this.form.fechaIngreso = null;
       this.form.fechaNacimiento = null;
+      this.form.rol = null;
     },
     saveUser() {
       this.sending = true;
@@ -462,11 +455,9 @@ export default {
             this.sending = false;
             this.clearForm();
             this.users = this.users;
-            this.getTodos();
-            this.showDialog = false;
           }, 1500);
           this.getTodos();
-          this.showDialog = false;
+          this.showDialogAgregar = false;
         })
         .catch(e => {
           console.log("no se pudo agregar");
@@ -474,17 +465,16 @@ export default {
         });
       this.getTodos();
     },
-    editUser(id) {
+    editUser() {
       this.sending = true;
+      console.log('id');
       // Instead of this timeout, here you can call your API
       axios
-        .post("http://localhost:3000/editarEmpleado/"+id, {
+        .put("http://localhost:3000/editarEmpleado/" + this.id, {
           nombre: this.form.nombre,
           apellido: this.form.apellido,
-          dpi: this.form.dpi,
-          email: this.form.email,
           fechaNacimiento: this.form.fechaNacimiento,
-          fechaIngreso: this.form.fechaIngreso,
+          rol: this.form.rol
         })
         .then(response => {
           // eslint-disable-next-line
@@ -494,7 +484,6 @@ export default {
             this.sending = false;
             this.clearForm();
             this.users = this.users;
-            this.getTodos();
             this.showDialog = false;
           }, 1500);
           this.getTodos();
@@ -512,13 +501,13 @@ export default {
         .delete("http://localhost:3000/eliminarEmpleado/" + id, {})
         .then(response => {
           // eslint-disable-next-line
+          this.getTodos();
           console.log(response.data);
         })
         .catch(e => {
           console.log("no se pudo eliminar");
           console.log(e);
         });
-      this.getTodos();
     },
     validateUser() {
       this.$v.$touch();
@@ -527,7 +516,7 @@ export default {
         this.saveUser();
       }
     },
-     validateEditUser() {
+    validateEditUser() {
       this.$v.$touch();
 
       if (!this.$v.$invalid) {

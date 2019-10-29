@@ -10,7 +10,7 @@
       </router-link>
       <md-button @click.prevent="logut">Cerrar Sesión</md-button>
     </md-toolbar>
-    <!-------------------------------------- TABLA EMPLEADOS---------------------------------------- -->
+    <!-------------------------------------- TABLA SOLICITUD EMPLEADO---------------------------------------- -->
     <md-table
       v-model="searched"
       md-sort="name"
@@ -66,23 +66,6 @@
 
             <md-card-content>
               <div class="md-layout md-gutter">
-                <div class="md-layout-item">
-                  <md-field :class="getValidationClass('diasSolicitados')">
-                    <label for="diasSolicitados">Dias Solicitados</label>
-                    <md-input
-                      type="number"
-                      name="diasSolicitados"
-                      id="diasSolicitados"
-                      autocomplete="family-name"
-                      v-model="form.diasSolicitados"
-                      :disabled="sending"
-                    />
-                    <span
-                      class="md-error"
-                      v-if="!$v.form.diasSolicitados.required"
-                    >The diasSolicitados is required</span>
-                  </md-field>
-                </div>
                 <div class="md-layout-item md-small-size-100">
                   <md-field :class="getValidationClass('periodo')">
                     <label for="periodo">Periodo</label>
