@@ -67,90 +67,53 @@
             <md-card-content>
               <div class="md-layout md-gutter">
                 <div class="md-layout-item">
-                  <md-field>
-                    <label for="empleadoId">Empleado</label>
-                    <md-select v-model="form.empleadoId" name="empleadoId" id="empleadoId">
-                      <md-option value="user.empleado.empleadoId" v-for="user in users" :key="user.id">{{user.empleado.nombre + " "+ user.empleado.apellido}}</md-option>
-                    </md-select>
-                  </md-field>
-                </div>
-
-                <div class="md-layout-item md-small-size-100">
-                  <md-field :class="getValidationClass('apellido')">
-                    <label for="last-name">Apellido(s)</label>
+                  <md-field :class="getValidationClass('diasSolicitados')">
+                    <label for="diasSolicitados">Dias Solicitados</label>
                     <md-input
-                      name="last-name"
-                      id="last-name"
+                      type="number"
+                      name="diasSolicitados"
+                      id="diasSolicitados"
                       autocomplete="family-name"
-                      v-model="form.apellido"
+                      v-model="form.diasSolicitados"
                       :disabled="sending"
                     />
                     <span
                       class="md-error"
-                      v-if="!$v.form.apellido.required"
-                    >The last name is required</span>
-                    <span class="md-error" v-else-if="!$v.form.apellido.minlength">Invalid last name</span>
+                      v-if="!$v.form.diasSolicitados.required"
+                    >The diasSolicitados is required</span>
+                  </md-field>
+                </div>
+                <div class="md-layout-item md-small-size-100">
+                  <md-field :class="getValidationClass('periodo')">
+                    <label for="periodo">Periodo</label>
+                    <md-input
+                      name="periodo"
+                      id="periodo"
+                      autocomplete="family-name"
+                      v-model="form.periodo"
+                      :disabled="sending"
+                    />
+                    <span
+                      class="md-error"
+                      v-if="!$v.form.periodo.required"
+                    >The periodo is required</span>
                   </md-field>
                 </div>
               </div>
               <div class="md-layout md-gutter">
                 <div class="md-layout-item md-small-size-100">
-                  <md-field :class="getValidationClass('dpi')">
-                    <label for="dpi">DPI</label>
-                    <md-input
-                      type="number"
-                      id="dpi"
-                      name="dpi"
-                      autocomplete="dpi"
-                      v-model="form.dpi"
-                      :disabled="sending"
-                    />
-                    <span class="md-error" v-if="!$v.form.dpi.required">The dpi is required</span>
-                    <span class="md-error" v-else-if="!$v.form.dpi.minlength">Invalid dpi</span>
-                    <span class="md-error" v-else-if="!$v.form.dpi.maxlength">Invalid dpi</span>
-                  </md-field>
-                </div>
-                <div class="md-layout-item md-small-size-100">
-                  <md-field :class="getValidationClass('email')">
-                    <label for="email">Email</label>
-                    <md-input
-                      type="email"
-                      name="email"
-                      id="email"
-                      autocomplete="email"
-                      v-model="form.email"
-                      :disabled="sending"
-                    />
-                    <span class="md-error" v-if="!$v.form.email.required">The email is required</span>
-                    <span class="md-error" v-else-if="!$v.form.email.email">Invalid email</span>
-                  </md-field>
-                </div>
-              </div>
-              <div class="md-layout md-gutter">
-                <div class="md-layout-item md-small-size-100">
-                  <md-field :class="getValidationClass('fechaIngreso')">
+                  <md-field :class="getValidationClass('fechaSolicitada')">
                     <md-datepicker
-                      v-model="form.fechaIngreso"
+                      v-model="form.fechaSolicitada"
                       :md-disabled-dates="disabledDates"
                       md-immediately
                     >
-                      <label>Fecha de Ingreso</label>
+                      <label>Fecha Solicitada</label>
                     </md-datepicker>
                     <span
                       class="md-error"
-                      v-if="!$v.form.fechaIngreso.required"
-                    >The fechaIngreso is required</span>
-                  </md-field>
-                </div>
-                <div class="md-layout-item md-small-size-100">
-                  <md-field :class="getValidationClass('fechaNacimiento')">
-                    <md-datepicker v-model="form.fechaNacimiento" md-immediately>
-                      <label for="fechaNacimiento">Fecha De Nacimiento</label>
-                    </md-datepicker>
-                    <span
-                      class="md-error"
-                      v-if="!$v.form.fechaNacimiento.required"
-                    >The fechaNacimiento is required</span>
+                      v-if="!$v.form.fechaSolicitada.required"
+                    >The fechaSolicitada is required</span>
                   </md-field>
                 </div>
               </div>
@@ -203,7 +166,7 @@ export default {
   data: () => ({
     form: {
       empleadoId: null,
-      fecha: null,
+      fechaSolicitada: null,
       diasSolicitados: null,
       periodo: null,
       status:null
@@ -224,27 +187,13 @@ export default {
   }),
   validations: {
     form: {
-      nombre: {
+      periodo: {
         required,
-        minLength: minLength(3)
       },
-      apellido: {
-        required,
-        minLength: minLength(3)
-      },
-      email: {
-        required,
-        email
-      },
-      dpi: {
-        required,
-        minLength: minLength(13),
-        maxLength: maxLength(13)
-      },
-      fechaIngreso: {
+      fechaSolicitada: {
         required
       },
-      fechaNacimiento: {
+      diasSolicitados: {
         required
       }
     }

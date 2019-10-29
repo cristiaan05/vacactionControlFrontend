@@ -203,7 +203,7 @@
     <!------------------------------------------- DIALOGO EDITAR EMPLEADO ----------------------------------->
     <md-dialog :md-active.sync="showDialog">
       <div>
-        <form novalidate class="md-layout" @submit.prevent="validateUser">
+        <form novalidate class="md-layout" @submit.prevent="validateEditUser">
           <md-card class="md-layout-item">
             <md-card-header>
               <div class="md-title">Editar Empleado</div>
@@ -474,6 +474,38 @@ export default {
         });
       this.getTodos();
     },
+    editUser(id) {
+      this.sending = true;
+      // Instead of this timeout, here you can call your API
+      axios
+        .post("http://localhost:3000/editarEmpleado/"+id, {
+          nombre: this.form.nombre,
+          apellido: this.form.apellido,
+          dpi: this.form.dpi,
+          email: this.form.email,
+          fechaNacimiento: this.form.fechaNacimiento,
+          fechaIngreso: this.form.fechaIngreso,
+        })
+        .then(response => {
+          // eslint-disable-next-line
+          console.log(response.data);
+          window.setTimeout(() => {
+            this.userSaved = true;
+            this.sending = false;
+            this.clearForm();
+            this.users = this.users;
+            this.getTodos();
+            this.showDialog = false;
+          }, 1500);
+          this.getTodos();
+          this.showDialog = false;
+        })
+        .catch(e => {
+          console.log("no se pudo agregar");
+          console.log(e);
+        });
+      this.getTodos();
+    },
     deleteUser(id) {
       // Instead of this timeout, here you can call your API
       axios
@@ -493,6 +525,13 @@ export default {
 
       if (!this.$v.$invalid) {
         this.saveUser();
+      }
+    },
+     validateEditUser() {
+      this.$v.$touch();
+
+      if (!this.$v.$invalid) {
+        this.editUser();
       }
     },
     date(value) {
